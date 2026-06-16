@@ -90,7 +90,9 @@ export class DeepSeekClient {
 
     const data = (await response.json()) as DeepSeekApiResponse
 
-    return this.parseResponse(query, data)
+    const result = this.parseResponse(query, data)
+    result.requestBody = body
+    return result
   }
 
   private parseResponse(
@@ -119,6 +121,6 @@ export class DeepSeekClient {
       }
     }
 
-    return { query, results, totalSearchRequests }
+    return { query, results, totalSearchRequests, requestBody: {} }
   }
 }

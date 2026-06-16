@@ -19,6 +19,8 @@ export interface AppConfig {
   maxTokens: number
   messageContent: string
   tool: ToolConfig
+  logEnabled: boolean
+  logDir: string
 }
 
 export interface DeepSeekWebSearchInput {
@@ -72,4 +74,5 @@ export interface SearchResponse {
   query: string
   results: SearchResult[]
   totalSearchRequests: number
+  requestBody: Record<string, unknown>
 }

@@ -6,6 +6,7 @@ import { z } from "zod"
 
 import { loadConfig } from "./config.js"
 import { DeepSeekClient } from "./deepseek-client.js"
+import { SearchLogger } from "./logger.js"
 import type { SearchResult } from "./types.js"
 
 const configResult = loadConfig()
@@ -23,9 +24,11 @@ if (!config.apiKey) {
 
 const client = new DeepSeekClient(config)
 
+const logger = new SearchLogger(config.logEnabled, config.logDir)
+
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.0.2",
+  version: "0.0.3",
 })
 
 function formatSearchResults(results: SearchResult[]): string {
@@ -89,6 +92,8 @@ server.registerTool(
         blockedDomains: blocked_domains,
         userLocation: user_location,
       })
+
+      logger.log(response)
 
       const text = formatSearchResults(response.results)
 

@@ -1,4 +1,4 @@
-import { homedir } from "os"
+import { homedir, tmpdir } from "os"
 import { join } from "path"
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 
@@ -27,6 +27,8 @@ function getDefaultConfig(): AppConfig {
       type: "web_search_20260209",
       max_uses: 20,
     },
+    logEnabled: false,
+    logDir: join(tmpdir(), "websearch-via-deepseek-logs"),
   }
 }
 
@@ -75,6 +77,13 @@ function loadEnvConfig(): Partial<AppConfig> {
     config.tool = tool as unknown as AppConfig["tool"]
   }
 
+  if (process.env.WEBSEARCH_LOG_ENABLED !== undefined) {
+    config.logEnabled = process.env.WEBSEARCH_LOG_ENABLED === "true" || process.env.WEBSEARCH_LOG_ENABLED === "1"
+  }
+  if (process.env.WEBSEARCH_LOG_DIR) {
+    config.logDir = process.env.WEBSEARCH_LOG_DIR
+  }
+
   return config
 }
 
@@ -114,6 +123,12 @@ function parseCliArgs(argv: string[]): Partial<AppConfig> {
         break
       case "max-uses":
         toolConfig.max_uses = Number(value)
+        break
+      case "log-enabled":
+        config.logEnabled = value === "true" || value === "1" || value === ""
+        break
+      case "log-dir":
+        config.logDir = value
         break
     }
   }
