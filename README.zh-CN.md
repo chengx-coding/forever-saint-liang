@@ -21,17 +21,50 @@ npm install -g forever-saint-liang-websearch
 
 ## 快速开始
 
-### 1. 设置 API Key
+设置 API Key 有两种方式，任选其一：
 
-通过环境变量设置：
+### 方式 A：用户配置文件（推荐）
 
-```bash
-export DEEPSEEK_API_KEY="sk-your-api-key"
+编辑 `~/.config/.websearch-via-deepseek/settings.json`，填入 `apiKey`（首次运行自动创建）：
+
+```json
+{
+  "apiKey": "sk-your-api-key"
+}
 ```
 
-或编辑 `~/.config/.websearch-via-deepseek/settings.json`，填入 `apiKey`。
+然后配置 MCP 客户端，无需设置环境变量：
 
-### 2. 配置 MCP 客户端
+**OpenCode** (`opencode.json`)：
+
+```json
+{
+  "mcp": {
+    "forever-saint-liang-websearch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "forever-saint-liang-websearch"]
+    }
+  }
+}
+```
+
+**Claude Code** (`claude_desktop_config.json` / `.mcp.json`)：
+
+```json
+{
+  "mcpServers": {
+    "forever-saint-liang-websearch": {
+      "command": "npx",
+      "args": ["forever-saint-liang-websearch"]
+    }
+  }
+}
+```
+
+### 方式 B：MCP 配置中设置环境变量
+
+直接在 MCP 客户端配置中传入 API Key：
 
 **OpenCode** (`opencode.json`)：
 
