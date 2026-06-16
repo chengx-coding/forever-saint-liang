@@ -1,6 +1,6 @@
 {
   "name": "forever-saint-liang-websearch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An MCP server that provides web search capabilities using DeepSeek's Anthropic-compatible API.",
   "type": "module",
   "main": "./dist/index.js",
@@ -8,7 +8,8 @@
     "forever-saint-liang-websearch": "./dist/index.js"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "default-config.json"
   ],
   "scripts": {
     "build": "tsc",

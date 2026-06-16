@@ -72,7 +72,7 @@ function loadEnvConfig(): Partial<AppConfig> {
   if (process.env.WEBSEARCH_MAX_USES) tool.max_uses = Number(process.env.WEBSEARCH_MAX_USES)
 
   if (Object.keys(tool).length > 0) {
-    config.tool = tool as AppConfig["tool"]
+    config.tool = tool as unknown as AppConfig["tool"]
   }
 
   return config
@@ -80,6 +80,8 @@ function loadEnvConfig(): Partial<AppConfig> {
 
 function parseCliArgs(argv: string[]): Partial<AppConfig> {
   const config: Partial<AppConfig> = {}
+
+  const toolConfig: Partial<AppConfig["tool"]> = {}
 
   for (const arg of argv) {
     if (!arg.startsWith("--")) continue
@@ -105,18 +107,19 @@ function parseCliArgs(argv: string[]): Partial<AppConfig> {
         config.messageContent = value
         break
       case "tool-name":
-        if (!config.tool) config.tool = {}
-        config.tool.name = value
+        toolConfig.name = value
         break
       case "tool-type":
-        if (!config.tool) config.tool = {}
-        config.tool.type = value
+        toolConfig.type = value
         break
       case "max-uses":
-        if (!config.tool) config.tool = {}
-        config.tool.max_uses = Number(value)
+        toolConfig.max_uses = Number(value)
         break
     }
+  }
+
+  if (Object.keys(toolConfig).length > 0) {
+    config.tool = toolConfig as AppConfig["tool"]
   }
 
   return config

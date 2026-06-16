@@ -1,15 +1,13 @@
 import type {
+  AppConfig,
   DeepSeekApiResponse,
-  SearchResult,
   SearchResponse,
+  SearchResult,
 } from "./types.js"
-
-const DEEPSEEK_API_BASE = "https://api.deepseek.com/anthropic/v1/messages"
 
 export interface SearchOptions {
   query: string
   maxUses?: number
-  timeRange?: string
   allowedDomains?: string[]
   blockedDomains?: string[]
   userLocation?: {
@@ -18,31 +16,34 @@ export interface SearchOptions {
     country?: string
     timezone?: string
   }
-  model?: string
 }
 
 export class DeepSeekClient {
-  private apiKey: string
-  private model: string
+  private config: AppConfig
 
-  constructor(apiKey: string, model = "deepseek-v4-flash") {
-    this.apiKey = apiKey
-    this.model = model
+  constructor(config: AppConfig) {
+    this.config = config
   }
 
   async search(options: SearchOptions): Promise<SearchResponse> {
     const {
       query,
-      maxUses = 5,
+      maxUses,
       allowedDomains,
       blockedDomains,
       userLocation,
     } = options
 
+    const toolConfig = this.config.tool
+
     const toolDef: Record<string, unknown> = {
-      type: "web_search_20260209",
-      name: "web_search",
-      max_uses: Math.min(Math.max(maxUses, 1), 20),
+      type: toolConfig.type,
+      name: toolConfig.name,
+    }
+
+    const effectiveMaxUses = maxUses ?? toolConfig.max_uses
+    if (effectiveMaxUses !== undefined) {
+      toolDef.max_uses = Math.min(Math.max(effectiveMaxUses, 1), 20)
     }
 
     if (allowedDomains?.length) {
@@ -58,19 +59,25 @@ export class DeepSeekClient {
       }
     }
 
+    const messages: Record<string, string>[] = []
+    if (this.config.messageContent) {
+      messages.push({ role: "system", content: this.config.messageContent })
+    }
+    messages.push({ role: "user", content: query })
+
     const body: Record<string, unknown> = {
-      model: this.model,
-      max_tokens: 4096,
-      messages: [{ role: "user", content: query }],
+      model: this.config.model,
+      max_tokens: this.config.maxTokens,
+      messages,
       tools: [toolDef],
       tool_choice: { type: "auto" },
     }
 
-    const response = await fetch(DEEPSEEK_API_BASE, {
+    const response = await fetch(this.config.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": this.apiKey,
+        "x-api-key": this.config.apiKey,
       },
       body: JSON.stringify(body),
     })
