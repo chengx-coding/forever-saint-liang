@@ -1,3 +1,28 @@
+export interface ToolConfig {
+  name: string
+  type: string
+  max_uses?: number
+  allowed_domains?: string[]
+  blocked_domains?: string[]
+  user_location?: {
+    city?: string
+    region?: string
+    country?: string
+    timezone?: string
+  }
+}
+
+export interface AppConfig {
+  apiKey: string
+  endpoint: string
+  model: string
+  maxTokens: number
+  systemPrompt: string
+  tool: ToolConfig
+  logEnabled: boolean
+  logDir: string
+}
+
 export interface DeepSeekWebSearchInput {
   query: string
 }
@@ -49,4 +74,5 @@ export interface SearchResponse {
   query: string
   results: SearchResult[]
   totalSearchRequests: number
+  requestBody: Record<string, unknown>
 }
