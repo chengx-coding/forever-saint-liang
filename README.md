@@ -14,7 +14,7 @@ Forever indebted to Saint Liang.
 ## Installation
 
 ```bash
-npm install -g forever-saint-liang
+npm install -g forever-saint-liang-websearch
 ```
 
 ## Configuration
@@ -38,9 +38,9 @@ Add to your MCP client config:
 ```json
 {
   "mcpServers": {
-    "forever-saint-liang": {
+    "forever-saint-liang-websearch": {
       "command": "npx",
-      "args": ["forever-saint-liang"],
+      "args": ["forever-saint-liang-websearch"],
       "env": {
         "DEEPSEEK_API_KEY": "sk-your-api-key"
       }
@@ -65,8 +65,8 @@ Search the web using DeepSeek's built-in web search.
 ## Development
 
 ```bash
-git clone https://github.com/chengxin/forever-saint-liang.git
-cd forever-saint-liang
+git clone https://github.com/chengx-coding/forever-saint-liang-websearch.git
+cd forever-saint-liang-websearch
 npm install
 npm run dev
 ```

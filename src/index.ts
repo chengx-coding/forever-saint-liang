@@ -18,7 +18,7 @@ const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || "deepseek-v4-flash"
 const client = new DeepSeekClient(DEEPSEEK_API_KEY, DEEPSEEK_MODEL)
 
 const server = new McpServer({
-  name: "forever-saint-liang",
+  name: "forever-saint-liang-websearch",
   version: "1.0.0",
 })
 
