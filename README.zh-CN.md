@@ -71,6 +71,10 @@ npm install
 npm run dev
 ```
 
+## 致谢
+
+本项目受 [websearch-deepseek](https://github.com/lyumeng/websearch-deepseek)（作者 [lyumeng](https://github.com/lyumeng)）启发。两个项目均以 MIT 许可证开源。
+
 ## 许可证
 
 MIT

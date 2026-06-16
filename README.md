@@ -71,6 +71,10 @@ npm install
 npm run dev
 ```
 
+## Acknowledgments
+
+This project is inspired by [websearch-deepseek](https://github.com/lyumeng/websearch-deepseek) by [lyumeng](https://github.com/lyumeng). Both projects are licensed under MIT.
+
 ## License
 
 MIT
