@@ -118,14 +118,17 @@ TEST_DEEPSEEK_API_KEY="sk-xxx" npx tsx .local/test-log-full.ts
 ## OpenCode 本地 MCP 配置
 
 ```json
-"forever-saint-liang-websearch": {
-  "type": "local",
-  "enabled": true,
-  "command": ["node", "C:/dev/myproj/forever-saint-liang/dist/index.js", "--api-key=sk-xxx"]
-}
+    "forever-saint-liang-websearch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["node", "C:/dev/myproj/forever-saint-liang/dist/index.js"],
+      "environment": {
+        "DEEPSEEK_API_KEY": "sk-xxx"
+      }
+    }
 ```
 
-> 注意: 需要通过 `--api-key=` CLI 参数传 API key，`env` 字段有时不生效。
+> 注意: 环境变量字段名为 `environment`（不是 `env`）。`--api-key=` CLI 参数也可作为替代方式传 API key。
 
 ## 当前状态 & 待办
 
