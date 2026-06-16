@@ -65,7 +65,6 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
   }
 }
 ```
-```
 
 ## 配置
 

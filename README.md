@@ -65,7 +65,6 @@ Or edit `~/.config/.websearch-via-deepseek/settings.json` and set `apiKey`.
   }
 }
 ```
-```
 
 ## Configuration
 
