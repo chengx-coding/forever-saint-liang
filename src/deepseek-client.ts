@@ -60,6 +60,7 @@ export class DeepSeekClient {
     }
 
     const messages: Record<string, string>[] = [
+      { role: "system", content: this.config.systemPrompt },
       { role: "user", content: query },
     ]
 

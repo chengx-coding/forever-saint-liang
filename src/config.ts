@@ -21,6 +21,7 @@ function getDefaultConfig(): AppConfig {
     endpoint: "https://api.deepseek.com/anthropic/v1/messages",
     model: "deepseek-v4-flash",
     maxTokens: 32768,
+    systemPrompt: "Use multiple keyword variations to conduct thorough research. Prioritize authoritative, verifiable sources. Provide comprehensive, well-cited answers.",
     tool: {
       name: "web_search",
       type: "web_search_20260209",
@@ -65,6 +66,7 @@ function loadEnvConfig(): Partial<AppConfig> {
   if (process.env.WEBSEARCH_ENDPOINT) config.endpoint = process.env.WEBSEARCH_ENDPOINT
   if (process.env.WEBSEARCH_MODEL) config.model = process.env.WEBSEARCH_MODEL
   if (process.env.WEBSEARCH_MAX_TOKENS) config.maxTokens = Number(process.env.WEBSEARCH_MAX_TOKENS)
+  if (process.env.WEBSEARCH_SYSTEM_PROMPT) config.systemPrompt = process.env.WEBSEARCH_SYSTEM_PROMPT
 
   const tool: Record<string, unknown> = {}
   if (process.env.WEBSEARCH_TOOL_NAME) tool.name = process.env.WEBSEARCH_TOOL_NAME
@@ -109,6 +111,9 @@ function parseCliArgs(argv: string[]): Partial<AppConfig> {
         break
       case "max-tokens":
         config.maxTokens = Number(value)
+        break
+      case "system-prompt":
+        config.systemPrompt = value
         break
       case "tool-name":
         toolConfig.name = value
