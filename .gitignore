@@ -141,3 +141,24 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local AI development tools
+.context/
+.local/
+.opencode/
+.claude/
+.trae/
+.codex/
+
+# AI assistant project-level configs
+CLAUDE.md
+AGENTS.md
+opencode.json
+opencode.jsonc
