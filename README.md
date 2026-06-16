@@ -21,17 +21,50 @@ On first run, a user config file is automatically created at `~/.config/.websear
 
 ## Quick Start
 
-### 1. Set your API key
+There are two ways to set your API key. Choose one:
 
-Set via environment variable:
+### Option A: User config file (recommended)
 
-```bash
-export DEEPSEEK_API_KEY="sk-your-api-key"
+Edit `~/.config/.websearch-via-deepseek/settings.json` and fill in `apiKey` (auto-created on first run):
+
+```json
+{
+  "apiKey": "sk-your-api-key"
+}
 ```
 
-Or edit `~/.config/.websearch-via-deepseek/settings.json` and set `apiKey`.
+Then configure your MCP client — no environment variable needed:
 
-### 2. Configure your MCP client
+**OpenCode** (`opencode.json`):
+
+```json
+{
+  "mcp": {
+    "forever-saint-liang-websearch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "forever-saint-liang-websearch"]
+    }
+  }
+}
+```
+
+**Claude Code** (`claude_desktop_config.json` / `.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "forever-saint-liang-websearch": {
+      "command": "npx",
+      "args": ["forever-saint-liang-websearch"]
+    }
+  }
+}
+```
+
+### Option B: Environment variable in MCP config
+
+Set the API key directly in your MCP client configuration:
 
 **OpenCode** (`opencode.json`):
 
