@@ -5,10 +5,11 @@
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "forever-saint-liang-websearch": "./dist/index.js"
+    "forever-saint-liang-websearch": "./bin/forever-saint-liang-websearch.js"
   },
   "files": [
     "dist/",
+    "bin/",
     "default-config.json"
   ],
   "scripts": {
@@ -28,7 +29,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chengx-coding/forever-saint-liang-websearch"
+    "url": "git+https://github.com/chengx-coding/forever-saint-liang-websearch.git"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
