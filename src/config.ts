@@ -8,7 +8,7 @@ const CONFIG_DIR_NAME = ".websearch-via-deepseek"
 const CONFIG_FILE_NAME = "settings.json"
 
 function getConfigDir(): string {
-  return join(homedir(), CONFIG_DIR_NAME)
+  return join(homedir(), ".config", CONFIG_DIR_NAME)
 }
 
 function getConfigFilePath(): string {
