@@ -33,6 +33,25 @@ Or edit `~/.config/.websearch-via-deepseek/settings.json` and set `apiKey`.
 
 ### 2. Configure your MCP client
 
+**OpenCode** (`opencode.json`):
+
+```json
+{
+  "mcp": {
+    "forever-saint-liang-websearch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "forever-saint-liang-websearch"],
+      "environment": {
+        "DEEPSEEK_API_KEY": "sk-your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Claude Code** (`claude_desktop_config.json` / `.mcp.json`):
+
 ```json
 {
   "mcpServers": {
@@ -45,6 +64,7 @@ Or edit `~/.config/.websearch-via-deepseek/settings.json` and set `apiKey`.
     }
   }
 }
+```
 ```
 
 ## Configuration

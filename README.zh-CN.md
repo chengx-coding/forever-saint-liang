@@ -33,6 +33,25 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
 
 ### 2. 配置 MCP 客户端
 
+**OpenCode** (`opencode.json`)：
+
+```json
+{
+  "mcp": {
+    "forever-saint-liang-websearch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "forever-saint-liang-websearch"],
+      "environment": {
+        "DEEPSEEK_API_KEY": "sk-your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Claude Code** (`claude_desktop_config.json` / `.mcp.json`)：
+
 ```json
 {
   "mcpServers": {
@@ -45,6 +64,7 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
     }
   }
 }
+```
 ```
 
 ## 配置
