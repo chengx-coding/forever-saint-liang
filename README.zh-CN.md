@@ -17,7 +17,7 @@
 npm install -g forever-saint-liang-websearch
 ```
 
-首次运行时，会自动在 `~/.websearch-via-deepseek/settings.json` 创建用户配置文件。
+首次运行时，会自动在 `~/.config/.websearch-via-deepseek/settings.json` 创建用户配置文件。
 
 ## 快速开始
 
@@ -29,7 +29,7 @@ npm install -g forever-saint-liang-websearch
 export DEEPSEEK_API_KEY="sk-your-api-key"
 ```
 
-或编辑 `~/.websearch-via-deepseek/settings.json`，填入 `apiKey`。
+或编辑 `~/.config/.websearch-via-deepseek/settings.json`，填入 `apiKey`。
 
 ### 2. 配置 MCP 客户端
 
@@ -53,7 +53,7 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
 
 1. **命令行参数** — `--api-key=sk-... --model=deepseek-v4-pro`
 2. **环境变量** — `WEBSEARCH_MODEL`、`WEBSEARCH_ENDPOINT` 等
-3. **用户配置文件** — `~/.websearch-via-deepseek/settings.json`
+3. **用户配置文件** — `~/.config/.websearch-via-deepseek/settings.json`
 4. **默认值** — 内置于服务端
 
 ### 配置文件 (`settings.json`)

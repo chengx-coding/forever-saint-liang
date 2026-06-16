@@ -17,7 +17,7 @@ Forever indebted to Saint Liang.
 npm install -g forever-saint-liang-websearch
 ```
 
-On first run, a user config file is automatically created at `~/.websearch-via-deepseek/settings.json`.
+On first run, a user config file is automatically created at `~/.config/.websearch-via-deepseek/settings.json`.
 
 ## Quick Start
 
@@ -29,7 +29,7 @@ Set via environment variable:
 export DEEPSEEK_API_KEY="sk-your-api-key"
 ```
 
-Or edit `~/.websearch-via-deepseek/settings.json` and set `apiKey`.
+Or edit `~/.config/.websearch-via-deepseek/settings.json` and set `apiKey`.
 
 ### 2. Configure your MCP client
 
@@ -53,7 +53,7 @@ Configuration is loaded with the following priority (highest first):
 
 1. **CLI arguments** — `--api-key=sk-... --model=deepseek-v4-pro`
 2. **Environment variables** — `WEBSEARCH_MODEL`, `WEBSEARCH_ENDPOINT`, etc.
-3. **User config file** — `~/.websearch-via-deepseek/settings.json`
+3. **User config file** — `~/.config/.websearch-via-deepseek/settings.json`
 4. **Defaults** — built into the server
 
 ### Config file (`settings.json`)
