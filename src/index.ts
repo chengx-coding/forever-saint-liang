@@ -28,7 +28,7 @@ const logger = new SearchLogger(config.logEnabled, config.logDir)
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.0.3",
+  version: "0.1.0",
 })
 
 function formatSearchResults(results: SearchResult[]): string {

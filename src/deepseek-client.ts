@@ -1,6 +1,7 @@
 import type {
   AppConfig,
   DeepSeekApiResponse,
+  DeepSeekContentBlock,
   SearchResponse,
   SearchResult,
 } from "./types.js"
@@ -17,6 +18,8 @@ export interface SearchOptions {
     timezone?: string
   }
 }
+
+const MAX_CONTINUATION_TURNS = 5
 
 export class DeepSeekClient {
   private config: AppConfig
@@ -59,67 +62,79 @@ export class DeepSeekClient {
       }
     }
 
-    const messages: Record<string, string>[] = [
+    const messages: (Record<string, unknown> | { role: string; content: DeepSeekContentBlock[] })[] = [
       { role: "system", content: this.config.systemPrompt },
       { role: "user", content: query },
     ]
 
-    const body: Record<string, unknown> = {
-      model: this.config.model,
-      max_tokens: this.config.maxTokens,
-      messages,
-      tools: [toolDef],
-      tool_choice: { type: "auto" },
-    }
-
-    const response = await fetch(this.config.endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": this.config.apiKey,
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (!response.ok) {
-      throw new Error(
-        `DeepSeek API error: ${response.status} ${response.statusText}`,
-      )
-    }
-
-    const data = (await response.json()) as DeepSeekApiResponse
-
-    const result = this.parseResponse(query, data)
-    result.requestBody = body
-    return result
-  }
-
-  private parseResponse(
-    query: string,
-    data: DeepSeekApiResponse,
-  ): SearchResponse {
-    const results: SearchResult[] = []
+    const allResults: SearchResult[] = []
     let totalSearchRequests = 0
+    let initialRequestBody: Record<string, unknown> = {}
 
-    if (data.usage?.server_tool_use?.web_search_requests) {
-      totalSearchRequests = data.usage.server_tool_use.web_search_requests
-    }
+    for (let turn = 0; turn < MAX_CONTINUATION_TURNS; turn++) {
+      const body: Record<string, unknown> = {
+        model: this.config.model,
+        max_tokens: this.config.maxTokens,
+        messages: messages as Record<string, unknown>[],
+        tools: [toolDef],
+        tool_choice: { type: "auto" },
+      }
 
-    for (const block of data.content) {
-      if (block.type === "web_search_tool_result") {
-        for (const item of block.content) {
-          if (item.type === "web_search_result") {
-            results.push({
-              title: item.title,
-              url: item.url,
-              content: item.encrypted_content,
-              pageAge: item.page_age,
-            })
+      if (turn === 0) {
+        initialRequestBody = { ...body }
+      }
+
+      const response = await fetch(this.config.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": this.config.apiKey,
+        },
+        body: JSON.stringify(body),
+      })
+
+      if (!response.ok) {
+        throw new Error(
+          `DeepSeek API error: ${response.status} ${response.statusText}`,
+        )
+      }
+
+      const data = (await response.json()) as DeepSeekApiResponse
+
+      for (const block of data.content) {
+        if (block.type === "web_search_tool_result") {
+          for (const item of block.content) {
+            if (item.type === "web_search_result") {
+              allResults.push({
+                title: item.title,
+                url: item.url,
+                content: item.encrypted_content,
+                pageAge: item.page_age,
+              })
+            }
           }
         }
       }
+
+      if (data.usage?.server_tool_use?.web_search_requests) {
+        totalSearchRequests += data.usage.server_tool_use.web_search_requests
+      }
+
+      if (data.stop_reason !== "pause_turn") {
+        break
+      }
+
+      messages.push({
+        role: "assistant",
+        content: data.content,
+      })
     }
 
-    return { query, results, totalSearchRequests, requestBody: {} }
+    return {
+      query,
+      results: allResults,
+      totalSearchRequests,
+      requestBody: initialRequestBody,
+    }
   }
 }
