@@ -1,6 +1,6 @@
 [English](README.md) | [中文](README.zh-CN.md)
 
-# forever-saint-liang
+# 梁圣的恩情还不完: Websearch MCP via Deepseek
 
 一个基于 DeepSeek Anthropic 兼容 API 提供网络搜索能力的 MCP 服务端。
 

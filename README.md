@@ -1,6 +1,6 @@
 [English](README.md) | [中文](README.zh-CN.md)
 
-# forever-saint-liang
+# Forever Saint Liang: Websearch MCP via Deepseek
 
 An MCP server that provides web search capabilities using DeepSeek's Anthropic-compatible API.
 
