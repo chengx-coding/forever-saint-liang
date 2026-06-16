@@ -60,8 +60,8 @@ server.registerTool(
         .int()
         .min(1)
         .max(config.tool.max_uses ?? 20)
-        .default(5)
-        .describe("Max number of search calls, each returning ~10 results. Default 5, capped by server config."),
+        .default(config.tool.max_uses ?? 20)
+        .describe("Max number of search calls, each returning ~10 results."),
       allowed_domains: z
         .array(z.string())
         .optional()

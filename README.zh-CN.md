@@ -64,7 +64,6 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
   "endpoint": "https://api.deepseek.com/anthropic/v1/messages",
   "model": "deepseek-v4-flash",
   "maxTokens": 32768,
-  "messageContent": "web search",
   "tool": {
     "name": "web_search",
     "type": "web_search_20260209",
@@ -79,7 +78,6 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
 | `endpoint` | `https://api.deepseek.com/anthropic/v1/messages` | API 端点 URL |
 | `model` | `deepseek-v4-flash` | 模型：`deepseek-v4-flash` 或 `deepseek-v4-pro` |
 | `maxTokens` | `32768` | 最大输出 token 数 |
-| `messageContent` | `"web search"` | 在查询前注入的系统消息 |
 | `tool.name` | `"web_search"` | MCP 中注册的工具名称 |
 | `tool.type` | `"web_search_20260209"` | DeepSeek 工具类型 |
 | `tool.max_uses` | `20` | 每次请求最大搜索调用次数 |
@@ -93,7 +91,6 @@ export DEEPSEEK_API_KEY="sk-your-api-key"
 | `WEBSEARCH_ENDPOINT` | `endpoint` |
 | `WEBSEARCH_MODEL` | `model` |
 | `WEBSEARCH_MAX_TOKENS` | `maxTokens` |
-| `WEBSEARCH_MESSAGE_CONTENT` | `messageContent` |
 | `WEBSEARCH_TOOL_NAME` | `tool.name` |
 | `WEBSEARCH_TOOL_TYPE` | `tool.type` |
 | `WEBSEARCH_MAX_USES` | `tool.max_uses` |
@@ -110,7 +107,6 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | `--endpoint` | `endpoint` |
 | `--model` | `model` |
 | `--max-tokens` | `maxTokens` |
-| `--message-content` | `messageContent` |
 | `--tool-name` | `tool.name` |
 | `--tool-type` | `tool.type` |
 | `--max-uses` | `tool.max_uses` |

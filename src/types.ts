@@ -17,7 +17,6 @@ export interface AppConfig {
   endpoint: string
   model: string
   maxTokens: number
-  messageContent: string
   tool: ToolConfig
   logEnabled: boolean
   logDir: string

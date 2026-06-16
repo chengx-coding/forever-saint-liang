@@ -21,7 +21,6 @@ function getDefaultConfig(): AppConfig {
     endpoint: "https://api.deepseek.com/anthropic/v1/messages",
     model: "deepseek-v4-flash",
     maxTokens: 32768,
-    messageContent: "web search",
     tool: {
       name: "web_search",
       type: "web_search_20260209",
@@ -66,7 +65,6 @@ function loadEnvConfig(): Partial<AppConfig> {
   if (process.env.WEBSEARCH_ENDPOINT) config.endpoint = process.env.WEBSEARCH_ENDPOINT
   if (process.env.WEBSEARCH_MODEL) config.model = process.env.WEBSEARCH_MODEL
   if (process.env.WEBSEARCH_MAX_TOKENS) config.maxTokens = Number(process.env.WEBSEARCH_MAX_TOKENS)
-  if (process.env.WEBSEARCH_MESSAGE_CONTENT) config.messageContent = process.env.WEBSEARCH_MESSAGE_CONTENT
 
   const tool: Record<string, unknown> = {}
   if (process.env.WEBSEARCH_TOOL_NAME) tool.name = process.env.WEBSEARCH_TOOL_NAME
@@ -111,9 +109,6 @@ function parseCliArgs(argv: string[]): Partial<AppConfig> {
         break
       case "max-tokens":
         config.maxTokens = Number(value)
-        break
-      case "message-content":
-        config.messageContent = value
         break
       case "tool-name":
         toolConfig.name = value

@@ -64,7 +64,6 @@ Configuration is loaded with the following priority (highest first):
   "endpoint": "https://api.deepseek.com/anthropic/v1/messages",
   "model": "deepseek-v4-flash",
   "maxTokens": 32768,
-  "messageContent": "web search",
   "tool": {
     "name": "web_search",
     "type": "web_search_20260209",
@@ -78,8 +77,7 @@ Configuration is loaded with the following priority (highest first):
 | `apiKey` | (empty) | DeepSeek API key |
 | `endpoint` | `https://api.deepseek.com/anthropic/v1/messages` | API endpoint URL |
 | `model` | `deepseek-v4-flash` | Model: `deepseek-v4-flash` or `deepseek-v4-pro` |
-| `maxTokens` | `32768` | Max output tokens |
-| `messageContent` | `"web search"` | System message injected before the query |
+|| `maxTokens` | `32768` | Max output tokens |
 | `tool.name` | `"web_search"` | Tool name registered in MCP |
 | `tool.type` | `"web_search_20260209"` | DeepSeek tool type |
 | `tool.max_uses` | `20` | Max search calls per request |
@@ -93,7 +91,6 @@ Configuration is loaded with the following priority (highest first):
 | `WEBSEARCH_ENDPOINT` | `endpoint` |
 | `WEBSEARCH_MODEL` | `model` |
 | `WEBSEARCH_MAX_TOKENS` | `maxTokens` |
-| `WEBSEARCH_MESSAGE_CONTENT` | `messageContent` |
 | `WEBSEARCH_TOOL_NAME` | `tool.name` |
 | `WEBSEARCH_TOOL_TYPE` | `tool.type` |
 | `WEBSEARCH_MAX_USES` | `tool.max_uses` |
@@ -110,7 +107,6 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | `--endpoint` | `endpoint` |
 | `--model` | `model` |
 | `--max-tokens` | `maxTokens` |
-| `--message-content` | `messageContent` |
 | `--tool-name` | `tool.name` |
 | `--tool-type` | `tool.type` |
 | `--max-uses` | `tool.max_uses` |

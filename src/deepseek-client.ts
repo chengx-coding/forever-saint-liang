@@ -59,11 +59,9 @@ export class DeepSeekClient {
       }
     }
 
-    const messages: Record<string, string>[] = []
-    if (this.config.messageContent) {
-      messages.push({ role: "system", content: this.config.messageContent })
-    }
-    messages.push({ role: "user", content: query })
+    const messages: Record<string, string>[] = [
+      { role: "user", content: query },
+    ]
 
     const body: Record<string, unknown> = {
       model: this.config.model,
