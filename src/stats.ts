@@ -84,7 +84,7 @@ export class SearchStatsRecorder {
         mkdirSync(dir, { recursive: true })
       }
 
-      const dbPath = join(dir, "search-stats.db")
+      const dbPath = join(dir, "data.db")
       this.db = new DatabaseSync(dbPath)
 
       this.db.exec(`
