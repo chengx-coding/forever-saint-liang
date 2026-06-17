@@ -7,6 +7,7 @@ import { z } from "zod"
 import { loadConfig } from "./config.js"
 import { DeepSeekClient } from "./deepseek-client.js"
 import { SearchLogger } from "./logger.js"
+import { SearchStatsRecorder } from "./stats.js"
 import type { SearchResult } from "./types.js"
 
 const configResult = loadConfig()
@@ -25,6 +26,8 @@ if (!config.apiKey) {
 const client = new DeepSeekClient(config)
 
 const logger = new SearchLogger(config.logEnabled, config.logDir)
+
+const stats = new SearchStatsRecorder(config.searchStatsEnabled, configResult.configDir)
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
@@ -95,6 +98,8 @@ server.registerTool(
 
       logger.log(response)
 
+      stats.recordSearch()
+
       const text = formatSearchResults(response.results)
 
       return {
@@ -116,6 +121,12 @@ server.registerTool(
 )
 
 async function main() {
+  await stats.init()
+
+  process.on("exit", () => {
+    stats.close()
+  })
+
   const transport = new StdioServerTransport()
   await server.connect(transport)
 }
