@@ -31,7 +31,7 @@ const stats = new SearchStatsRecorder(config.searchStatsEnabled, configResult.co
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.1.0",
+  version: "0.1.3",
 })
 
 function formatSearchResults(results: SearchResult[]): string {
@@ -114,6 +114,80 @@ server.registerTool(
       const message = error instanceof Error ? error.message : String(error)
       return {
         content: [{ type: "text" as const, text: `Search failed: ${message}` }],
+        isError: true,
+      }
+    }
+  },
+)
+
+server.registerTool(
+  "web_search_stats",
+  {
+    description:
+      "Query hourly search statistics. Returns per-hour search counts within a time range. If no time range is specified, defaults to today (from 00:00 to now).",
+    inputSchema: {
+      from: z
+        .string()
+        .datetime()
+        .optional()
+        .describe("Start of time range (ISO 8601 datetime). Defaults to today at 00:00:00."),
+      to: z
+        .string()
+        .datetime()
+        .optional()
+        .describe("End of time range (ISO 8601 datetime). Defaults to now."),
+    },
+  },
+  async (args) => {
+    const now = new Date()
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+
+    const from = args.from ? new Date(args.from) : todayStart
+    const to = args.to ? new Date(args.to) : now
+
+    try {
+      const result = stats.queryStats(from, to)
+
+      if (!result.available) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `# Search Stats: Unavailable\n\n${result.unavailableReason}`,
+            },
+          ],
+        }
+      }
+
+      const lines: string[] = [
+        `# Search Stats`,
+        ``,
+        `| Year | Month | Day | Hour | DoW | Count |`,
+        `|------|-------|-----|------|-----|-------|`,
+      ]
+
+      const dowNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+      for (const r of result.records) {
+        const pad = (n: number) => String(n).padStart(2, "0")
+        lines.push(
+          `| ${r.year} | ${pad(r.month)} | ${pad(r.day)} | ${pad(r.hour)} | ${dowNames[r.dayOfWeek]} | ${r.count} |`,
+        )
+      }
+
+      lines.push(``)
+      lines.push(`**Total**: ${result.totalCount} search(es) across ${result.records.length} hour(s)`)
+      lines.push(
+        `**Range**: ${from.toISOString()} — ${to.toISOString()}`,
+      )
+
+      return {
+        content: [{ type: "text" as const, text: lines.join("\n") }],
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      return {
+        content: [{ type: "text" as const, text: `Search stats query failed: ${message}` }],
         isError: true,
       }
     }
