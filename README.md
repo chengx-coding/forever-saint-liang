@@ -6,6 +6,8 @@ An MCP server that provides web search capabilities using DeepSeek's Anthropic-c
 
 Forever indebted to Saint Liang.
 
+> "Saint Liang" refers to Liang Wenfeng, founder of DeepSeek — named in honor of his work and DeepSeek's impact on the world.
+
 ## Prerequisites
 
 - Node.js >= 18
@@ -135,6 +137,7 @@ Configuration is loaded with the following priority (highest first):
 | `tool.name` | `"web_search"` | Tool name registered in MCP |
 | `tool.type` | `"web_search_20260209"` | DeepSeek tool type |
 | `tool.max_uses` | `20` | Max search calls per request |
+| `searchStatsEnabled` | `false` | Enable hourly search statistics (requires Node >= 22) |
 
 ### Environment variables
 
@@ -149,6 +152,9 @@ Configuration is loaded with the following priority (highest first):
 | `WEBSEARCH_TOOL_NAME` | `tool.name` |
 | `WEBSEARCH_TOOL_TYPE` | `tool.type` |
 | `WEBSEARCH_MAX_USES` | `tool.max_uses` |
+| `WEBSEARCH_LOG_ENABLED` | `logEnabled` |
+| `WEBSEARCH_LOG_DIR` | `logDir` |
+| `WEBSEARCH_SEARCH_STATS_ENABLED` | `searchStatsEnabled` |
 
 ### CLI arguments
 
@@ -166,6 +172,9 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | `--tool-name` | `tool.name` |
 | `--tool-type` | `tool.type` |
 | `--max-uses` | `tool.max_uses` |
+| `--log-enabled` | `logEnabled` |
+| `--log-dir` | `logDir` |
+| `--search-stats-enabled` | `searchStatsEnabled` |
 
 ## Tool: `web_search`
 
@@ -178,6 +187,17 @@ Search the web using DeepSeek's built-in web search.
 | `allowed_domains` | string[] | No | — | Only include results from these domains |
 | `blocked_domains` | string[] | No | — | Exclude results from these domains |
 | `user_location` | object | No | — | Localized results: `{ city?, region?, country?, timezone? }` |
+
+## Tool: `web_search_stats`
+
+Query hourly search statistics from the local SQLite database. This tool is only available when `searchStatsEnabled` is `true` **and** Node.js >= 22.
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `from` | string (ISO 8601) | No | Today 00:00 | Start of time range |
+| `to` | string (ISO 8601) | No | Now | End of time range |
+
+**When the stats feature is unavailable**, the tool returns a specific reason: configuration disabled, Node.js version too low, or database error. See `searchStatsEnabled` in the Configuration section.
 
 ## Development
 
