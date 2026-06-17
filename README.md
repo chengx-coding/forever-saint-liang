@@ -19,7 +19,10 @@ Forever indebted to Saint Liang.
 npm install -g forever-saint-liang-websearch
 ```
 
-On first run, a user config file is automatically created at `~/.config/.websearch-via-deepseek/settings.json`.
+On first run, a user config file is automatically created. The location depends on your platform:
+
+- **Linux / macOS**: `~/.config/.websearch-via-deepseek/settings.json`
+- **Windows**: `%USERPROFILE%\.config\.websearch-via-deepseek\settings.json`
 
 ## Quick Start
 
@@ -27,7 +30,7 @@ There are two ways to set your API key. Choose one:
 
 ### Option A: User config file (recommended)
 
-Edit `~/.config/.websearch-via-deepseek/settings.json` and fill in `apiKey` (auto-created on first run):
+Edit the user config file and fill in `apiKey`:
 
 ```json
 {
@@ -107,7 +110,7 @@ Configuration is loaded with the following priority (highest first):
 
 1. **CLI arguments** — `--api-key=sk-... --model=deepseek-v4-pro`
 2. **Environment variables** — `WEBSEARCH_MODEL`, `WEBSEARCH_ENDPOINT`, etc.
-3. **User config file** — `~/.config/.websearch-via-deepseek/settings.json`
+3. **User config file** — `settings.json` (see Installation for path per platform)
 4. **Defaults** — built into the server
 
 ### Config file (`settings.json`)
