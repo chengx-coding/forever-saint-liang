@@ -49,6 +49,14 @@ export class SearchLogger {
         type: "search",
         timestamp: new Date().toISOString(),
         query: response.query,
+        model: response.model,
+        stopReason: response.stopReason,
+        turns: response.turns,
+        searchQueries: response.searchQueries,
+        totalSearchRequests: response.totalSearchRequests,
+        usage: response.usage,
+        answer: response.answer,
+        thinking: response.thinking ?? null,
         requestBody: response.requestBody,
       }
       appendFileSync(filePath, JSON.stringify(searchEntry) + "\n", "utf-8")
@@ -57,11 +65,12 @@ export class SearchLogger {
         const r = response.results[i]
         const resultEntry = {
           type: "result",
-          index: i,
+          index: r.index ?? i,
           title: r.title,
           url: r.url,
-          content: r.content,
           pageAge: r.pageAge,
+          searchQuery: r.searchQuery ?? null,
+          toolUseId: r.toolUseId ?? null,
         }
         appendFileSync(filePath, JSON.stringify(resultEntry) + "\n", "utf-8")
       }

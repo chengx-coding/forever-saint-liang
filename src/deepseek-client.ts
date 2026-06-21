@@ -68,8 +68,19 @@ export class DeepSeekClient {
     ]
 
     const allResults: SearchResult[] = []
+    const searchQueries: string[] = []
+    const answerParts: string[] = []
+    const thinkingParts: string[] = []
     let totalSearchRequests = 0
+    let totalInputTokens = 0
+    let totalOutputTokens = 0
     let initialRequestBody: Record<string, unknown> = {}
+    let lastStopReason = ""
+    let lastModel = this.config.model
+    let turnsExecuted = 0
+    let resultIndex = 0
+
+    const toolUseIdToQuery = new Map<string, string>()
 
     for (let turn = 0; turn < MAX_CONTINUATION_TURNS; turn++) {
       const body: Record<string, unknown> = {
@@ -100,24 +111,45 @@ export class DeepSeekClient {
       }
 
       const data = (await response.json()) as DeepSeekApiResponse
+      turnsExecuted = turn + 1
+      lastStopReason = data.stop_reason
+      if (data.model) lastModel = data.model
 
       for (const block of data.content) {
-        if (block.type === "web_search_tool_result") {
+        if (block.type === "server_tool_use") {
+          if (block.input?.query) {
+            searchQueries.push(block.input.query)
+            if (block.id) {
+              toolUseIdToQuery.set(block.id, block.input.query)
+            }
+          }
+        } else if (block.type === "web_search_tool_result") {
+          const sourceQuery = toolUseIdToQuery.get(block.tool_use_id)
           for (const item of block.content) {
             if (item.type === "web_search_result") {
               allResults.push({
+                index: resultIndex++,
                 title: item.title,
                 url: item.url,
-                content: item.encrypted_content,
                 pageAge: item.page_age,
+                toolUseId: block.tool_use_id,
+                searchQuery: sourceQuery,
               })
             }
           }
+        } else if (block.type === "text") {
+          if (block.text) answerParts.push(block.text)
+        } else if (block.type === "thinking") {
+          if (block.thinking) thinkingParts.push(block.thinking)
         }
       }
 
-      if (data.usage?.server_tool_use?.web_search_requests) {
-        totalSearchRequests += data.usage.server_tool_use.web_search_requests
+      if (data.usage) {
+        totalInputTokens += data.usage.input_tokens ?? 0
+        totalOutputTokens += data.usage.output_tokens ?? 0
+        if (data.usage.server_tool_use?.web_search_requests) {
+          totalSearchRequests += data.usage.server_tool_use.web_search_requests
+        }
       }
 
       if (data.stop_reason !== "pause_turn") {
@@ -132,8 +164,19 @@ export class DeepSeekClient {
 
     return {
       query,
+      answer: answerParts.join("\n\n"),
+      thinking: thinkingParts.length > 0 ? thinkingParts.join("\n\n") : undefined,
+      searchQueries,
       results: allResults,
       totalSearchRequests,
+      stopReason: lastStopReason,
+      model: lastModel,
+      turns: turnsExecuted,
+      usage: {
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        webSearchRequests: totalSearchRequests,
+      },
       requestBody: initialRequestBody,
     }
   }
