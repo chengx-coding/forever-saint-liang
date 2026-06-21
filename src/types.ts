@@ -65,15 +65,30 @@ export type DeepSeekContentBlock =
   | { type: "text"; text: string }
 
 export interface SearchResult {
+  index: number
   title: string
   url: string
-  content: string
   pageAge: string | null
+  toolUseId?: string
+  searchQuery?: string
+}
+
+export interface SearchUsage {
+  inputTokens: number
+  outputTokens: number
+  webSearchRequests: number
 }
 
 export interface SearchResponse {
   query: string
+  answer: string
+  thinking?: string
+  searchQueries: string[]
   results: SearchResult[]
   totalSearchRequests: number
+  stopReason: string
+  model: string
+  turns: number
+  usage: SearchUsage
   requestBody: Record<string, unknown>
 }

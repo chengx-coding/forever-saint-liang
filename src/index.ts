@@ -8,7 +8,6 @@ import { loadConfig } from "./config.js"
 import { DeepSeekClient } from "./deepseek-client.js"
 import { SearchLogger } from "./logger.js"
 import { SearchStatsRecorder } from "./stats.js"
-import type { SearchResult } from "./types.js"
 
 const configResult = loadConfig()
 const config = configResult.config
@@ -34,24 +33,11 @@ const server = new McpServer({
   version: "0.1.3",
 })
 
-function formatSearchResults(results: SearchResult[]): string {
-  if (results.length === 0) {
-    return "No results found."
-  }
-
-  return results
-    .map(
-      (r, i) =>
-        `## ${i + 1}. [${r.title}](${r.url})\n${r.content}\n`,
-    )
-    .join("\n---\n")
-}
-
 server.registerTool(
   config.tool.name,
   {
     description:
-      "Search the web using DeepSeek's built-in web search. Each search call returns ~10 results. Use max_uses to request additional keyword variations.",
+      "Search the web using DeepSeek's built-in web search. Returns a JSON payload containing the model's synthesized answer, the list of source results (title/url/pageAge/searchQuery), the search queries actually issued, token usage and other metadata. Each search call returns ~10 results. Use max_uses to request additional keyword variations.",
     inputSchema: {
       query: z
         .string()
@@ -100,20 +86,53 @@ server.registerTool(
 
       stats.recordSearch()
 
-      const text = formatSearchResults(response.results)
+      const payload = {
+        query: response.query,
+        answer: response.answer,
+        ...(response.thinking ? { thinking: response.thinking } : {}),
+        search_queries: response.searchQueries,
+        total_search_requests: response.totalSearchRequests,
+        result_count: response.results.length,
+        results: response.results.map((r) => ({
+          index: r.index,
+          title: r.title,
+          url: r.url,
+          page_age: r.pageAge,
+          search_query: r.searchQuery ?? null,
+          tool_use_id: r.toolUseId ?? null,
+        })),
+        model: response.model,
+        stop_reason: response.stopReason,
+        turns: response.turns,
+        usage: {
+          input_tokens: response.usage.inputTokens,
+          output_tokens: response.usage.outputTokens,
+          web_search_requests: response.usage.webSearchRequests,
+        },
+      }
 
       return {
         content: [
           {
             type: "text" as const,
-            text: `# Search: "${response.query}"\n${response.totalSearchRequests} search call(s), ${response.results.length} result(s)\n\n${text}`,
+            text: JSON.stringify(payload, null, 2),
           },
         ],
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
+      const errorPayload = {
+        ok: false,
+        error: message,
+        query,
+      }
       return {
-        content: [{ type: "text" as const, text: `Search failed: ${message}` }],
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(errorPayload, null, 2),
+          },
+        ],
         isError: true,
       }
     }
@@ -124,7 +143,7 @@ server.registerTool(
   "web_search_stats",
   {
     description:
-      "Query hourly search statistics. Returns per-hour search counts within a time range. If no time range is specified, defaults to today (from 00:00 to now).",
+      "Query hourly search statistics as a JSON payload. Returns per-hour search counts within a time range. If no time range is specified, defaults to today (from 00:00 to now).",
     inputSchema: {
       from: z
         .string()
@@ -149,45 +168,60 @@ server.registerTool(
       const result = stats.queryStats(from, to)
 
       if (!result.available) {
+        const unavailablePayload = {
+          available: false,
+          unavailable_reason: result.unavailableReason,
+          range: { from: from.toISOString(), to: to.toISOString() },
+        }
         return {
           content: [
             {
               type: "text" as const,
-              text: `# Search Stats: Unavailable\n\n${result.unavailableReason}`,
+              text: JSON.stringify(unavailablePayload, null, 2),
             },
           ],
         }
       }
 
-      const lines: string[] = [
-        `# Search Stats`,
-        ``,
-        `| Year | Month | Day | Hour | DoW | Count |`,
-        `|------|-------|-----|------|-----|-------|`,
-      ]
-
       const dowNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-      for (const r of result.records) {
-        const pad = (n: number) => String(n).padStart(2, "0")
-        lines.push(
-          `| ${r.year} | ${pad(r.month)} | ${pad(r.day)} | ${pad(r.hour)} | ${dowNames[r.dayOfWeek]} | ${r.count} |`,
-        )
+      const payload = {
+        available: true,
+        range: { from: from.toISOString(), to: to.toISOString() },
+        total_count: result.totalCount,
+        record_count: result.records.length,
+        records: result.records.map((r) => ({
+          year: r.year,
+          month: r.month,
+          day: r.day,
+          hour: r.hour,
+          day_of_week: r.dayOfWeek,
+          day_of_week_name: dowNames[r.dayOfWeek],
+          count: r.count,
+        })),
       }
 
-      lines.push(``)
-      lines.push(`**Total**: ${result.totalCount} search(es) across ${result.records.length} hour(s)`)
-      lines.push(
-        `**Range**: ${from.toISOString()} — ${to.toISOString()}`,
-      )
-
       return {
-        content: [{ type: "text" as const, text: lines.join("\n") }],
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(payload, null, 2),
+          },
+        ],
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
+      const errorPayload = {
+        ok: false,
+        error: message,
+      }
       return {
-        content: [{ type: "text" as const, text: `Search stats query failed: ${message}` }],
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(errorPayload, null, 2),
+          },
+        ],
         isError: true,
       }
     }
