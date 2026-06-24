@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+import { readFileSync } from "fs"
+import { join, dirname } from "path"
+import { fileURLToPath } from "url"
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
@@ -8,6 +12,11 @@ import { loadConfig } from "./config.js"
 import { DeepSeekClient } from "./deepseek-client.js"
 import { SearchLogger } from "./logger.js"
 import { SearchStatsRecorder } from "./stats.js"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, "..", "package.json"), "utf-8"),
+) as { version: string }
 
 const configResult = loadConfig()
 const config = configResult.config
@@ -30,7 +39,7 @@ const stats = new SearchStatsRecorder(config.searchStatsEnabled, configResult.co
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.1.5",
+  version: pkg.version,
 })
 
 server.registerTool(
@@ -228,7 +237,18 @@ server.registerTool(
   },
 )
 
-async function main() {
+function detectCliMode(args: string[]): boolean {
+  if (args.length === 0) return false
+
+  const cliCommands = ["search", "stats", "version", "help"]
+  const cliFlags = ["--version", "--help", "-V", "-h"]
+
+  return args.some(
+    (arg) => cliCommands.includes(arg) || cliFlags.includes(arg),
+  )
+}
+
+async function startMcpServer() {
   await stats.init()
 
   process.on("exit", () => {
@@ -239,7 +259,19 @@ async function main() {
   await server.connect(transport)
 }
 
+async function main() {
+  const args = process.argv.slice(2)
+
+  if (detectCliMode(args)) {
+    const { runCli } = await import("./cli.js")
+    runCli()
+    return
+  }
+
+  await startMcpServer()
+}
+
 main().catch((error) => {
-  console.error("Failed to start server:", error)
+  console.error("Fatal error:", error)
   process.exit(1)
 })

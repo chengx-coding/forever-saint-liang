@@ -45,7 +45,7 @@ Then configure your MCP client — no environment variable needed:
 ```json
 {
   "mcp": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "type": "local",
       "enabled": true,
       "command": ["npx", "forever-saint-liang-websearch"]
@@ -59,7 +59,7 @@ Then configure your MCP client — no environment variable needed:
 ```json
 {
   "mcpServers": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "command": "npx",
       "args": ["forever-saint-liang-websearch"]
     }
@@ -76,7 +76,7 @@ Set the API key directly in your MCP client configuration:
 ```json
 {
   "mcp": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "type": "local",
       "enabled": true,
       "command": ["npx", "forever-saint-liang-websearch"],
@@ -93,7 +93,7 @@ Set the API key directly in your MCP client configuration:
 ```json
 {
   "mcpServers": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "command": "npx",
       "args": ["forever-saint-liang-websearch"],
       "env": {
@@ -179,6 +179,39 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | `--log-dir` | `logDir` |
 | `--search-stats-enabled` | `searchStatsEnabled` |
 
+## CLI Mode
+
+The server also supports a standalone CLI mode. When a subcommand is provided, it runs as a CLI tool instead of an MCP server:
+
+```bash
+# Perform a web search
+forever-saint-liang-websearch search "TypeScript latest version"
+
+# Search with config options
+forever-saint-liang-websearch search "hello world" --model=deepseek-v4-pro
+
+# View search statistics
+forever-saint-liang-websearch stats
+
+# Stats with a date range
+forever-saint-liang-websearch stats 2026-06-01 2026-06-24
+
+# Show version and help
+forever-saint-liang-websearch --version
+forever-saint-liang-websearch --help
+```
+
+All configuration flags (`--api-key`, `--model`, `--max-uses`, etc.) work in CLI mode just like MCP mode. Output is in JSON format.
+
+### CLI Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `search <query>` | Perform a web search, output JSON |
+| `stats [from] [to]` | Show search statistics, output JSON |
+| `version` | Show version number |
+| `help` | Show help information |
+
 ## Tool: `web_search`
 
 Search the web using DeepSeek's built-in web search.
@@ -186,7 +219,7 @@ Search the web using DeepSeek's built-in web search.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `query` | string | Yes | — | Search query (1-500 chars) |
-| `max_uses` | number | No | 5 | Max search calls (capped by server config `tool.max_uses`) |
+| `max_uses` | number | No | `config.tool.max_uses ?? 20` | Max search calls (capped by server config `tool.max_uses`) |
 | `allowed_domains` | string[] | No | — | Only include results from these domains |
 | `blocked_domains` | string[] | No | — | Exclude results from these domains |
 | `user_location` | object | No | — | Localized results: `{ city?, region?, country?, timezone? }` |

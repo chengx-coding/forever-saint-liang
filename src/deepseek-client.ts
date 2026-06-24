@@ -79,10 +79,11 @@ export class DeepSeekClient {
     let lastModel = this.config.model
     let turnsExecuted = 0
     let resultIndex = 0
+    let hasRetriedOnEmpty = false
 
     const toolUseIdToQuery = new Map<string, string>()
 
-    for (let turn = 0; turn < MAX_CONTINUATION_TURNS; turn++) {
+    for (let turn = 0; turn < MAX_CONTINUATION_TURNS || (turn === MAX_CONTINUATION_TURNS && hasRetriedOnEmpty); turn++) {
       const body: Record<string, unknown> = {
         model: this.config.model,
         max_tokens: this.config.maxTokens,
@@ -153,6 +154,18 @@ export class DeepSeekClient {
       }
 
       if (data.stop_reason !== "pause_turn") {
+        if (
+          data.stop_reason === "end_turn" &&
+          allResults.length === 0 &&
+          !hasRetriedOnEmpty
+        ) {
+          hasRetriedOnEmpty = true
+          messages.push({
+            role: "assistant",
+            content: data.content,
+          })
+          continue
+        }
         break
       }
 

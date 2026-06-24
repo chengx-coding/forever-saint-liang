@@ -45,7 +45,7 @@ npm install -g forever-saint-liang-websearch
 ```json
 {
   "mcp": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "type": "local",
       "enabled": true,
       "command": ["npx", "forever-saint-liang-websearch"]
@@ -59,7 +59,7 @@ npm install -g forever-saint-liang-websearch
 ```json
 {
   "mcpServers": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "command": "npx",
       "args": ["forever-saint-liang-websearch"]
     }
@@ -76,7 +76,7 @@ npm install -g forever-saint-liang-websearch
 ```json
 {
   "mcp": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "type": "local",
       "enabled": true,
       "command": ["npx", "forever-saint-liang-websearch"],
@@ -93,7 +93,7 @@ npm install -g forever-saint-liang-websearch
 ```json
 {
   "mcpServers": {
-    "forever-saint-liang-websearch": {
+    "fsl-websearch": {
       "command": "npx",
       "args": ["forever-saint-liang-websearch"],
       "env": {
@@ -179,6 +179,39 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | `--log-dir` | `logDir` |
 | `--search-stats-enabled` | `searchStatsEnabled` |
 
+## CLI 模式
+
+本工具也支持独立的 CLI 模式。提供子命令时，以 CLI 工具方式运行，而非 MCP 服务端：
+
+```bash
+# 终端直接搜索
+forever-saint-liang-websearch search "TypeScript最新版本"
+
+# 带配置选项搜索
+forever-saint-liang-websearch search "你好世界" --model=deepseek-v4-pro
+
+# 查看搜索统计
+forever-saint-liang-websearch stats
+
+# 指定日期范围的统计
+forever-saint-liang-websearch stats 2026-06-01 2026-06-24
+
+# 查看版本与帮助
+forever-saint-liang-websearch --version
+forever-saint-liang-websearch --help
+```
+
+所有配置参数（`--api-key`、`--model`、`--max-uses` 等）在 CLI 模式下与 MCP 模式一致可用。输出为 JSON 格式。
+
+### CLI 子命令
+
+| 命令 | 说明 |
+|------|------|
+| `search <query>` | 执行网络搜索，输出 JSON |
+| `stats [from] [to]` | 查看搜索统计，输出 JSON |
+| `version` | 显示版本号 |
+| `help` | 显示帮助信息 |
+
 ## 工具：`web_search`
 
 使用 DeepSeek 内置网络搜索进行搜索。
@@ -186,7 +219,7 @@ forever-saint-liang-websearch --api-key=sk-... --model=deepseek-v4-pro
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | `query` | string | 是 | — | 搜索关键词（1-500 字符） |
-| `max_uses` | number | 否 | 5 | 最大搜索调用次数（受服务端 `tool.max_uses` 限制） |
+| `max_uses` | number | 否 | `config.tool.max_uses ?? 20` | 最大搜索调用次数（受服务端 `tool.max_uses` 限制） |
 | `allowed_domains` | string[] | 否 | — | 仅返回指定域名的结果 |
 | `blocked_domains` | string[] | 否 | — | 排除指定域名的结果 |
 | `user_location` | object | 否 | — | 本地化结果：`{ city?, region?, country?, timezone? }` |
