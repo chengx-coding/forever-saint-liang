@@ -30,7 +30,7 @@ const stats = new SearchStatsRecorder(config.searchStatsEnabled, configResult.co
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.1.5",
+  version: "0.2.0",
 })
 
 server.registerTool(
