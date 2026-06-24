@@ -79,6 +79,7 @@ export class DeepSeekClient {
     let lastModel = this.config.model
     let turnsExecuted = 0
     let resultIndex = 0
+    let hasRetriedOnEmpty = false
 
     const toolUseIdToQuery = new Map<string, string>()
 
@@ -153,6 +154,18 @@ export class DeepSeekClient {
       }
 
       if (data.stop_reason !== "pause_turn") {
+        if (
+          data.stop_reason === "end_turn" &&
+          allResults.length === 0 &&
+          !hasRetriedOnEmpty
+        ) {
+          hasRetriedOnEmpty = true
+          messages.push({
+            role: "assistant",
+            content: data.content,
+          })
+          continue
+        }
         break
       }
 
