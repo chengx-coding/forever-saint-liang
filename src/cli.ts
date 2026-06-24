@@ -34,11 +34,8 @@ export function createCli() {
   program
     .command("search <query>")
     .description("Perform a web search")
-    .action(async (query: string, _opts: unknown, cmd: Command) => {
-      const parent = cmd.parent!
-      const argv = parent.args as string[]
-
-      const { config } = loadConfig(argv)
+    .action(async (query: string, _opts: unknown, _cmd: Command) => {
+      const { config } = loadConfig()
       if (!config.apiKey) {
         console.error(
           "API key required. Set DEEPSEEK_API_KEY env var or use --api-key=sk-...",
@@ -131,6 +128,6 @@ export function createCli() {
   return program
 }
 
-export function runCli(argv: string[]): void {
-  createCli().parse(argv)
+export function runCli(): void {
+  createCli().parse(process.argv)
 }

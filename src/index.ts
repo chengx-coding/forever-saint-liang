@@ -257,7 +257,7 @@ async function main() {
 
   if (detectCliMode(args)) {
     const { runCli } = await import("./cli.js")
-    runCli(args)
+    runCli()
     return
   }
 
