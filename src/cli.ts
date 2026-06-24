@@ -29,10 +29,11 @@ export function createCli() {
       "Web search via DeepSeek — MCP server with CLI mode",
     )
     .allowUnknownOption()
-    .passThroughOptions()
 
   program
     .command("search <query>")
+    .allowUnknownOption()
+    .allowExcessArguments()
     .description("Perform a web search")
     .action(async (query: string, _opts: unknown, _cmd: Command) => {
       const { config } = loadConfig()
@@ -66,6 +67,8 @@ export function createCli() {
 
   program
     .command("stats [from] [to]")
+    .allowUnknownOption()
+    .allowExcessArguments()
     .description("Show search statistics")
     .action(async (from?: string, to?: string) => {
       const configResult = loadConfig()
@@ -87,6 +90,13 @@ export function createCli() {
       )
       const fromDate = from ? new Date(from) : todayStart
       const toDate = to ? new Date(to) : now
+
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        console.error(
+          `Invalid date(s): from="${from ?? "today"}", to="${to ?? "now"}"`,
+        )
+        process.exit(1)
+      }
 
       try {
         const result: StatsQueryResult = stats.queryStats(fromDate, toDate)
