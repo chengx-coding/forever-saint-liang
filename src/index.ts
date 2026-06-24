@@ -228,7 +228,20 @@ server.registerTool(
   },
 )
 
-async function main() {
+function detectCliMode(args: string[]): boolean {
+  if (args.length === 0) return false
+
+  const cliCommands = ["search", "stats", "version", "help"]
+  const cliFlags = ["--version", "--help", "-V", "-h"]
+
+  const first = args[0]
+  if (cliCommands.includes(first)) return true
+  if (cliFlags.includes(first)) return true
+
+  return false
+}
+
+async function startMcpServer() {
   await stats.init()
 
   process.on("exit", () => {
@@ -239,7 +252,19 @@ async function main() {
   await server.connect(transport)
 }
 
+async function main() {
+  const args = process.argv.slice(2)
+
+  if (detectCliMode(args)) {
+    const { runCli } = await import("./cli.js")
+    runCli(args)
+    return
+  }
+
+  await startMcpServer()
+}
+
 main().catch((error) => {
-  console.error("Failed to start server:", error)
+  console.error("Fatal error:", error)
   process.exit(1)
 })
