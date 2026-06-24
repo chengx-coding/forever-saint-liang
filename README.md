@@ -219,7 +219,7 @@ Search the web using DeepSeek's built-in web search.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `query` | string | Yes | — | Search query (1-500 chars) |
-| `max_uses` | number | No | 5 | Max search calls (capped by server config `tool.max_uses`) |
+| `max_uses` | number | No | `config.tool.max_uses ?? 20` | Max search calls (capped by server config `tool.max_uses`) |
 | `allowed_domains` | string[] | No | — | Only include results from these domains |
 | `blocked_domains` | string[] | No | — | Exclude results from these domains |
 | `user_location` | object | No | — | Localized results: `{ city?, region?, country?, timezone? }` |

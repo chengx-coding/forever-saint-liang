@@ -83,7 +83,7 @@ export class DeepSeekClient {
 
     const toolUseIdToQuery = new Map<string, string>()
 
-    for (let turn = 0; turn < MAX_CONTINUATION_TURNS; turn++) {
+    for (let turn = 0; turn < MAX_CONTINUATION_TURNS || (turn === MAX_CONTINUATION_TURNS && hasRetriedOnEmpty); turn++) {
       const body: Record<string, unknown> = {
         model: this.config.model,
         max_tokens: this.config.maxTokens,

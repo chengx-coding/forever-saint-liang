@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+import { readFileSync } from "fs"
+import { join, dirname } from "path"
+import { fileURLToPath } from "url"
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
@@ -8,6 +12,11 @@ import { loadConfig } from "./config.js"
 import { DeepSeekClient } from "./deepseek-client.js"
 import { SearchLogger } from "./logger.js"
 import { SearchStatsRecorder } from "./stats.js"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, "..", "package.json"), "utf-8"),
+) as { version: string }
 
 const configResult = loadConfig()
 const config = configResult.config
@@ -30,7 +39,7 @@ const stats = new SearchStatsRecorder(config.searchStatsEnabled, configResult.co
 
 const server = new McpServer({
   name: "forever-saint-liang-websearch",
-  version: "0.2.0",
+  version: pkg.version,
 })
 
 server.registerTool(
@@ -234,11 +243,9 @@ function detectCliMode(args: string[]): boolean {
   const cliCommands = ["search", "stats", "version", "help"]
   const cliFlags = ["--version", "--help", "-V", "-h"]
 
-  const first = args[0]
-  if (cliCommands.includes(first)) return true
-  if (cliFlags.includes(first)) return true
-
-  return false
+  return args.some(
+    (arg) => cliCommands.includes(arg) || cliFlags.includes(arg),
+  )
 }
 
 async function startMcpServer() {

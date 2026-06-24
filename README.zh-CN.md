@@ -219,7 +219,7 @@ forever-saint-liang-websearch --help
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | `query` | string | 是 | — | 搜索关键词（1-500 字符） |
-| `max_uses` | number | 否 | 5 | 最大搜索调用次数（受服务端 `tool.max_uses` 限制） |
+| `max_uses` | number | 否 | `config.tool.max_uses ?? 20` | 最大搜索调用次数（受服务端 `tool.max_uses` 限制） |
 | `allowed_domains` | string[] | 否 | — | 仅返回指定域名的结果 |
 | `blocked_domains` | string[] | 否 | — | 排除指定域名的结果 |
 | `user_location` | object | 否 | — | 本地化结果：`{ city?, region?, country?, timezone? }` |

@@ -31,12 +31,26 @@ export function createCli() {
     .allowUnknownOption()
 
   program
+    .option("--api-key <key>", "DeepSeek API key")
+    .option("--endpoint <url>", "API endpoint URL")
+    .option("--model <model>", "Model name (deepseek-v4-flash or deepseek-v4-pro)")
+    .option("--max-tokens <n>", "Max output tokens")
+    .option("--system-prompt <text>", "System prompt")
+    .option("--tool-name <name>", "MCP tool name")
+    .option("--tool-type <type>", "DeepSeek tool type")
+    .option("--max-uses <n>", "Max search calls per request")
+    .option("--log-enabled", "Enable search logging")
+    .option("--log-dir <dir>", "Log directory")
+    .option("--search-stats-enabled", "Enable search statistics")
+
+  program
     .command("search <query>")
     .allowUnknownOption()
     .allowExcessArguments()
     .description("Perform a web search")
     .action(async (query: string, _opts: unknown, _cmd: Command) => {
-      const { config } = loadConfig()
+      const configResult = loadConfig()
+      const config = configResult.config
       if (!config.apiKey) {
         console.error(
           "API key required. Set DEEPSEEK_API_KEY env var or use --api-key=sk-...",
@@ -45,8 +59,16 @@ export function createCli() {
       }
 
       const client = new DeepSeekClient(config)
+      const stats = new SearchStatsRecorder(
+        config.searchStatsEnabled,
+        configResult.configDir,
+      )
+      await stats.init()
+
       try {
         const response: SearchResponse = await client.search({ query })
+        stats.recordSearch()
+        stats.close()
         const payload = {
           query: response.query,
           answer: response.answer,
