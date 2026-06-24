@@ -47,20 +47,34 @@ export function createCli() {
       const client = new DeepSeekClient(config)
       try {
         const response: SearchResponse = await client.search({ query })
-        const output = {
+        const payload = {
           query: response.query,
-          totalSearchRequests: response.totalSearchRequests,
+          answer: response.answer,
+          ...(response.thinking ? { thinking: response.thinking } : {}),
+          search_queries: response.searchQueries,
+          total_search_requests: response.totalSearchRequests,
+          result_count: response.results.length,
           results: response.results.map((r) => ({
+            index: r.index,
             title: r.title,
             url: r.url,
-            content: r.content,
-            pageAge: r.pageAge,
+            page_age: r.pageAge,
+            search_query: r.searchQuery ?? null,
+            tool_use_id: r.toolUseId ?? null,
           })),
+          model: response.model,
+          stop_reason: response.stopReason,
+          turns: response.turns,
+          usage: {
+            input_tokens: response.usage.inputTokens,
+            output_tokens: response.usage.outputTokens,
+            web_search_requests: response.usage.webSearchRequests,
+          },
         }
-        console.log(JSON.stringify(output, null, 2))
+        console.log(JSON.stringify(payload, null, 2))
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
-        console.error(`Search failed: ${msg}`)
+        console.error(JSON.stringify({ ok: false, error: msg }))
         process.exit(1)
       }
     })
